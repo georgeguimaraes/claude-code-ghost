@@ -1,4 +1,4 @@
-# claude-code-ghost
+# 👻 claude-code-ghost ⭐
 
 A [Claude Code](https://code.claude.com) plugin marketplace for managing [Ghost](https://ghost.org) blogs.
 
