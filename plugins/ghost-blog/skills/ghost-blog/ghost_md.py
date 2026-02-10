@@ -17,13 +17,24 @@ from markdownify import markdownify as html_to_md
 import markdown
 
 
+def _detect_code_language(pre_el):
+    """Extract language from <code class="language-xxx"> inside a <pre> element."""
+    code = pre_el.find("code")
+    if code and code.get("class"):
+        classes = code["class"] if isinstance(code["class"], list) else [code["class"]]
+        for c in classes:
+            if c.startswith("language-"):
+                return c.replace("language-", "")
+    return ""
+
+
 def pull(post_id, output=None):
     g = Ghost()
     post = g.get(f"admin/posts/{post_id}", formats="html", include="tags,authors")["posts"][0]
     md = html_to_md(
         post["html"],
         heading_style="ATX",
-        code_language_callback=lambda el: el.get("class", "").replace("language-", "") if el.get("class") else None,
+        code_language_callback=_detect_code_language,
     )
     if output:
         with open(output, "w") as f:
@@ -38,7 +49,7 @@ def push(post_id, md_file):
     with open(md_file) as f:
         md_content = f.read()
 
-    html = markdown.markdown(md_content, extensions=["tables", "fenced_code", "codehilite"])
+    html = markdown.markdown(md_content, extensions=["tables", "fenced_code"])
     post = g.get(f"admin/posts/{post_id}")["posts"][0]
     g.put(
         f"admin/posts/{post_id}",
