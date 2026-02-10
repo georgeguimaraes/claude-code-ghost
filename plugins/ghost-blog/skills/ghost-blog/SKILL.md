@@ -260,12 +260,29 @@ The `Ghost` class raises exceptions with HTTP status and Ghost's error message o
 - **422 Validation Error**: Missing `updated_at`, invalid field, etc.
 - **429 Too Many Requests**: Rate limited, wait and retry
 
+## Markdown Workflow
+
+For editing posts as markdown instead of HTML, use `ghost_md.py` (requires [uv](https://docs.astral.sh/uv/)):
+
+```bash
+# Pull a post as markdown
+<base_directory_of_this_skill>/ghost_md.py pull POST_ID /tmp/post.md
+
+# Edit the markdown file, then push it back
+<base_directory_of_this_skill>/ghost_md.py push POST_ID /tmp/post.md
+```
+
+This is the **preferred workflow for editing post content**. Pull the post as markdown, edit the `.md` file using standard text editing tools, then push it back. Ghost receives HTML converted from the markdown.
+
+For creating new posts or updating metadata (title, tags, status, feature image, etc.), use the `ghost_api.py` module directly.
+
 ## Guidelines
 
-1. **Always use the `PYTHONPATH=... python3 << 'PY'` pattern** for all Ghost operations
-2. **Use the Admin API** for writes and drafts; Content API for simple public reads
-3. **Always GET before PUT** to obtain `updated_at` for collision detection
-4. **Confirm destructive actions** (delete, unpublish) with the user first
-5. **Use `source="html"`** when creating/updating posts with HTML content
-6. **Use `formats="html"`** when reading posts via Admin API (defaults to Lexical only)
-7. **Use `include="tags,authors"`** when listing posts for full context
+1. **Always use the `PYTHONPATH=... python3 << 'PY'` pattern** for all Ghost API operations
+2. **Use `ghost_md.py pull/push` for editing post content** as markdown
+3. **Use the Admin API** for writes and drafts; Content API for simple public reads
+4. **Always GET before PUT** to obtain `updated_at` for collision detection
+5. **Confirm destructive actions** (delete, unpublish) with the user first
+6. **Use `source="html"`** when creating/updating posts with HTML content
+7. **Use `formats="html"`** when reading posts via Admin API (defaults to Lexical only)
+8. **Use `include="tags,authors"`** when listing posts for full context

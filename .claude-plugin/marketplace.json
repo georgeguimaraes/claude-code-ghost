@@ -7,7 +7,7 @@
     "description": "Claude Code plugins for Ghost CMS blog management",
     "homepage": "https://github.com/georgeguimaraes/claude-code-ghost",
     "pluginRoot": "./plugins",
-    "version": "1.0.0"
+    "version": "1.1.0"
   },
   "plugins": [
     {
