@@ -1,0 +1,20 @@
+{
+  "name": "ghost-blog",
+  "version": "1.0.0",
+  "description": "Manage your Ghost blog directly from Claude Code: create, update, publish, schedule posts, upload images, manage tags, members, and newsletters",
+  "author": {
+    "name": "George Guimaraes"
+  },
+  "homepage": "https://github.com/georgeguimaraes/claude-code-ghost",
+  "license": "MIT",
+  "keywords": [
+    "ghost",
+    "blog",
+    "cms",
+    "posts",
+    "publishing",
+    "newsletter",
+    "content",
+    "api"
+  ]
+}

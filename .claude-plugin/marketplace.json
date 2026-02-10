@@ -1,0 +1,21 @@
+{
+  "name": "claude-code-ghost",
+  "owner": {
+    "name": "George Guimaraes"
+  },
+  "metadata": {
+    "description": "Claude Code plugins for Ghost CMS blog management",
+    "homepage": "https://github.com/georgeguimaraes/claude-code-ghost",
+    "pluginRoot": "./plugins",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "ghost-blog",
+      "source": "./plugins/ghost-blog",
+      "description": "Manage your Ghost blog: create, update, publish, schedule posts, upload images, manage tags, members, and newsletters via the Ghost API",
+      "category": "productivity",
+      "keywords": ["ghost", "blog", "cms", "posts", "publishing", "newsletter", "api"]
+    }
+  ]
+}
