@@ -193,6 +193,23 @@ Include in create/update payload:
 }]}
 ```
 
+**Unsplash attribution**: When using Unsplash images as feature images, always set `feature_image_caption` with proper attribution. The caption supports HTML:
+
+```python
+"feature_image_caption": 'Photo by <a href="https://unsplash.com/@username?utm_source=ghost&utm_medium=referral">Author Name</a> on <a href="https://unsplash.com/?utm_source=ghost&utm_medium=referral">Unsplash</a>'
+```
+
+To get photographer info, fetch the photo metadata from Unsplash's API:
+
+```python
+import json, urllib.request
+photo_id = "abc123"
+with urllib.request.urlopen(f"https://unsplash.com/napi/photos/{photo_id}") as resp:
+    data = json.loads(resp.read())
+name = data["user"]["name"]
+username = data["user"]["username"]
+```
+
 ### Embedding YouTube Videos (Native Lexical Cards)
 
 **Prefer native Lexical embed cards over raw HTML iframes.** Native embeds render correctly in Ghost's editor and frontend without sizing issues.
