@@ -41,6 +41,9 @@ PY
 | `g.put(path, data, **params)` | Returns dict | PUT with JSON body |
 | `g.delete(path)` | Returns None | DELETE request |
 | `g.upload(file_path, ref=None)` | Returns URL string | Multipart image upload |
+| `g.unsplash_search(query, orientation="landscape", per_page=10)` | Returns list of dicts | Search Unsplash photos |
+| `g.unsplash_caption(photo_id=None, user_name=None, user_username=None)` | Returns HTML string | Build Unsplash attribution caption |
+| `g.set_unsplash_feature_image(post_id, photo_id)` | Returns post dict | Set feature image from Unsplash photo ID |
 
 **Path convention**: paths start with `content/` or `admin/` (e.g. `content/posts`, `admin/posts/abc123`). Auth is handled automatically based on prefix.
 
@@ -193,21 +196,23 @@ Include in create/update payload:
 }]}
 ```
 
-**Unsplash attribution**: When using Unsplash images as feature images, always set `feature_image_caption` with proper attribution. The caption supports HTML:
+**Unsplash feature images**: Use the built-in helpers to search Unsplash and set feature images with proper attribution in one call:
 
 ```python
-"feature_image_caption": 'Photo by <a href="https://unsplash.com/@username?utm_source=ghost&utm_medium=referral">Author Name</a> on <a href="https://unsplash.com/?utm_source=ghost&utm_medium=referral">Unsplash</a>'
+results = g.unsplash_search("abstract flowing lines", per_page=5)
+for r in results:
+    print(f"{r['id']}  {r['width']}x{r['height']}  by {r['user_name']}  plus={r['is_plus']}")
+
+# Set feature image with auto-generated attribution caption
+post = g.set_unsplash_feature_image("POST_ID", results[0]["id"])
 ```
 
-To get photographer info, fetch the photo metadata from Unsplash's API:
+To build a caption without setting the feature image (e.g. for manual use):
 
 ```python
-import json, urllib.request
-photo_id = "abc123"
-with urllib.request.urlopen(f"https://unsplash.com/napi/photos/{photo_id}") as resp:
-    data = json.loads(resp.read())
-name = data["user"]["name"]
-username = data["user"]["username"]
+caption = g.unsplash_caption(photo_id="abc123")
+# or skip the API call if you already have user info from search results:
+caption = g.unsplash_caption(user_name="Author Name", user_username="author")
 ```
 
 ### Embedding YouTube Videos (Native Lexical Cards)

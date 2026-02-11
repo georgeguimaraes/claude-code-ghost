@@ -93,6 +93,60 @@ class Ghost:
         result = self.put(f"admin/posts/{post_id}", {"posts": [post_data]}, **params)
         return result["posts"][0]
 
+    def _unsplash_get(self, path):
+        url = f"https://unsplash.com/napi/{path}"
+        req = urllib.request.Request(url, headers={"Accept": "application/json"})
+        with urllib.request.urlopen(req) as resp:
+            return json.loads(resp.read().decode())
+
+    def unsplash_search(self, query, orientation="landscape", per_page=10):
+        """Search Unsplash photos. Returns list of dicts with id, description, dimensions, user info, url, is_plus."""
+        params = urllib.parse.urlencode({
+            "query": query, "orientation": orientation, "per_page": per_page,
+        })
+        data = self._unsplash_get(f"search/photos?{params}")
+        results = []
+        for p in data.get("results", []):
+            results.append({
+                "id": p["id"],
+                "description": p.get("description") or p.get("alt_description") or "",
+                "width": p["width"],
+                "height": p["height"],
+                "user_name": p["user"]["name"],
+                "user_username": p["user"]["username"],
+                "url": p["urls"]["raw"] + "&w=1600",
+                "is_plus": p.get("plus", False),
+            })
+        return results
+
+    def unsplash_caption(self, photo_id=None, user_name=None, user_username=None):
+        """Build an HTML attribution caption for an Unsplash photo.
+        Pass photo_id to auto-fetch metadata, or user_name + user_username to skip the API call."""
+        if photo_id and not (user_name and user_username):
+            data = self._unsplash_get(f"photos/{photo_id}")
+            user_name = data["user"]["name"]
+            user_username = data["user"]["username"]
+        if not (user_name and user_username):
+            raise ValueError("Provide photo_id, or both user_name and user_username")
+        utm = "utm_source=ghost&utm_medium=referral"
+        return (
+            f'Photo by <a href="https://unsplash.com/@{user_username}?{utm}">'
+            f'{user_name}</a> on '
+            f'<a href="https://unsplash.com/?{utm}">Unsplash</a>'
+        )
+
+    def set_unsplash_feature_image(self, post_id, photo_id):
+        """Set a post's feature image from an Unsplash photo ID. Fetches photo metadata, builds caption, updates post."""
+        data = self._unsplash_get(f"photos/{photo_id}")
+        url = data["urls"]["raw"] + "&w=1600"
+        user_name = data["user"]["name"]
+        user_username = data["user"]["username"]
+        caption = self.unsplash_caption(user_name=user_name, user_username=user_username)
+        return self.update_post(post_id, {
+            "feature_image": url,
+            "feature_image_caption": caption,
+        })
+
     def upload(self, file_path, ref=None):
         boundary = f"----GhostUpload{int(time.time() * 1000)}"
         filename = os.path.basename(file_path)
