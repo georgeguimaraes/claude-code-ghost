@@ -322,6 +322,30 @@ This is the **preferred workflow for editing post content**. Pull the post as ma
 
 For creating new posts or updating metadata (title, tags, status, feature image, etc.), use the `ghost_api.py` module directly.
 
+## Choosing the Right Content Format
+
+| Approach | When to use |
+|----------|-------------|
+| **HTML with `source="html"`** | Default for creating/updating posts. Simple and works for most content. |
+| **Markdown workflow** (`ghost_md.py`) | Preferred for editing existing post content. |
+| **Lexical JSON** | Native embed cards (YouTube, Twitter, bookmarks) or surgical edits to specific nodes. Use `formats="lexical"` to read, send `"lexical": json.dumps(...)` to write, and do NOT pass `source="html"`. |
+| **HTML cards** | When Ghost's HTML-to-Lexical conversion causes formatting issues (e.g., converting bold paragraphs back to headings). |
+
+### HTML Cards (Raw HTML Escape Hatch)
+
+When `source="html"` causes Ghost to reinterpret your markup (changing heading levels, merging paragraphs, etc.), wrap content in HTML card markers to preserve it exactly:
+
+```html
+<!--kg-card-begin: html-->
+<div class="custom-section">
+  <p><strong>Bold title that stays a paragraph</strong></p>
+  <p>Supporting text that won't be merged or reformatted.</p>
+</div>
+<!--kg-card-end: html-->
+```
+
+Ghost stores this as a single opaque HTML card and won't convert it to Lexical nodes. Use inline `<style>` blocks inside the card for custom styling. Note that HTML card content is not editable in Ghost's visual editor (it shows as a code block).
+
 ## Guidelines
 
 1. **Always use the `PYTHONPATH=... python3 << 'PY'` pattern** for all Ghost API operations
