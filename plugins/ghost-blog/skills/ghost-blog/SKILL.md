@@ -332,3 +332,4 @@ For creating new posts or updating metadata (title, tags, status, feature image,
 6. **Use `source="html"`** when creating/updating posts with HTML content
 7. **Use `formats="html"`** when reading posts via Admin API (defaults to Lexical only)
 8. **Use `include="tags,authors"`** when listing posts for full context
+9. **Always check `custom_excerpt` when updating a post's content or title.** Ghost uses `custom_excerpt` for cards, social previews, and SEO descriptions. If the post content or title changes significantly (e.g. translation, rewrite, new topic), the excerpt likely needs updating too. After any major edit, verify the excerpt still matches the current content and update it if not.
