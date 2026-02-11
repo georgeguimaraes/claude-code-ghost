@@ -195,6 +195,52 @@ Include in create/update payload:
 }]}
 ```
 
+### Embedding YouTube Videos (Native Lexical Cards)
+
+**Prefer native Lexical embed cards over raw HTML iframes.** Native embeds render correctly in Ghost's editor and frontend without sizing issues.
+
+To embed a YouTube video, fetch oembed data and write a Lexical `embed` node directly:
+
+```python
+import json
+import urllib.request
+
+# Step 1: Fetch oembed metadata from YouTube
+video_url = "https://www.youtube.com/watch?v=VIDEO_ID"
+oembed_api = f"https://www.youtube.com/oembed?url={video_url}&format=json"
+with urllib.request.urlopen(oembed_api) as resp:
+    oembed = json.loads(resp.read())
+
+# Step 2: GET the post as Lexical
+post = g.get("admin/posts/POST_ID", formats="lexical")["posts"][0]
+lexical = json.loads(post["lexical"])
+
+# Step 3: Build the native embed node
+embed_node = {
+    "type": "embed",
+    "version": 1,
+    "url": video_url,
+    "embedType": "video",
+    "html": oembed["html"],
+    "metadata": oembed
+}
+
+# Step 4: Insert or replace a node in the children array
+lexical["root"]["children"].insert(1, embed_node)  # or replace: lexical["root"]["children"][N] = embed_node
+
+# Step 5: PUT with Lexical JSON (no source="html")
+g.put("admin/posts/POST_ID",
+    {"posts": [{
+        "lexical": json.dumps(lexical),
+        "updated_at": post["updated_at"],
+    }]})
+```
+
+This works for any oembed provider (YouTube, Vimeo, Twitter, etc.). The key differences from HTML-based updates:
+- Use `formats="lexical"` when reading (not `formats="html"`)
+- Send `"lexical": json.dumps(...)` in the PUT body (not `"html": ...`)
+- Do NOT pass `source="html"` when updating via Lexical
+
 ## Other Resources
 
 ### Tags
