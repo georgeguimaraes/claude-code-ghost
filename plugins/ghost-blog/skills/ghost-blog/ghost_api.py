@@ -73,6 +73,26 @@ class Ghost:
     def delete(self, path):
         return self._request("DELETE", path)
 
+    def create_post(self, post_data):
+        """Create a post. Automatically adds source=html when html key is present."""
+        params = {}
+        if "html" in post_data:
+            params["source"] = "html"
+        result = self.post("admin/posts", {"posts": [post_data]}, **params)
+        return result["posts"][0]
+
+    def update_post(self, post_id, post_data, updated_at=None):
+        """Update a post. Fetches updated_at if not provided. Adds source=html when html key is present."""
+        if updated_at is None:
+            current = self.get(f"admin/posts/{post_id}")["posts"][0]
+            updated_at = current["updated_at"]
+        post_data["updated_at"] = updated_at
+        params = {}
+        if "html" in post_data:
+            params["source"] = "html"
+        result = self.put(f"admin/posts/{post_id}", {"posts": [post_data]}, **params)
+        return result["posts"][0]
+
     def upload(self, file_path, ref=None):
         boundary = f"----GhostUpload{int(time.time() * 1000)}"
         filename = os.path.basename(file_path)

@@ -1,6 +1,6 @@
 {
   "name": "ghost-blog",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "description": "Manage your Ghost blog directly from Claude Code: create, update, publish, schedule posts, upload images, manage tags, members, and newsletters",
   "author": {
     "name": "George Guimaraes"

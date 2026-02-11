@@ -94,19 +94,16 @@ post = g.get("content/posts/slug/my-post-slug", include="tags,authors")["posts"]
 
 ### Create a Post
 
-Use `source="html"` so Ghost converts HTML to its internal Lexical format.
+Use `g.create_post()` which automatically adds `source=html` when HTML content is present (Ghost v5+ requires this to convert HTML to its internal Lexical format; without it, content will be empty):
 
 ```python
-result = g.post("admin/posts",
-    {"posts": [{
-        "title": "My New Post",
-        "html": "<p>Post content in HTML.</p>",
-        "status": "draft",
-        "tags": [{"name": "Tag Name"}],
-        "custom_excerpt": "A short excerpt.",
-    }]},
-    source="html")
-post = result["posts"][0]
+post = g.create_post({
+    "title": "My New Post",
+    "html": "<p>Post content in HTML.</p>",
+    "status": "draft",
+    "tags": [{"name": "Tag Name"}],
+    "custom_excerpt": "A short excerpt.",
+})
 print(f"Created: {post['title']} (ID: {post['id']})")
 ```
 
@@ -116,20 +113,21 @@ Tags that don't exist are created automatically. To preserve raw HTML blocks, wr
 
 ### Update a Post
 
-Always GET first to obtain `updated_at` for collision detection. Tags and authors are **replaced entirely** on update, so send the complete desired list.
+Use `g.update_post()` which fetches `updated_at` automatically and adds `source=html` when HTML content is present. Tags and authors are **replaced entirely** on update, so send the complete desired list.
 
 ```python
-# Step 1: Get current state
-post = g.get("admin/posts/POST_ID", formats="html")["posts"][0]
+post = g.update_post("POST_ID", {
+    "title": "Updated Title",
+    "html": "<p>Updated content.</p>",
+})
+```
 
-# Step 2: Update with current updated_at
-result = g.put("admin/posts/POST_ID",
-    {"posts": [{
-        "title": "Updated Title",
-        "html": "<p>Updated content.</p>",
-        "updated_at": post["updated_at"],
-    }]},
-    source="html")
+If you already have `updated_at` from a previous GET, pass it to skip the extra request:
+
+```python
+post = g.update_post("POST_ID", {
+    "html": "<p>Updated content.</p>",
+}, updated_at=existing_post["updated_at"])
 ```
 
 ### Publish a Draft
