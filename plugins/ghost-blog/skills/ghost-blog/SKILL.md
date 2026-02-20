@@ -376,4 +376,5 @@ Ghost stores this as a single opaque HTML card and won't convert it to Lexical n
 6. **Use `source="html"`** when creating/updating posts with HTML content
 7. **Use `formats="html"`** when reading posts via Admin API (defaults to Lexical only)
 8. **Use `include="tags,authors"`** when listing posts for full context
-9. **Always check `custom_excerpt` when updating a post's content or title.** Ghost uses `custom_excerpt` for cards, social previews, and SEO descriptions. If the post content or title changes significantly (e.g. translation, rewrite, new topic), the excerpt likely needs updating too. After any major edit, verify the excerpt still matches the current content and update it if not.
+9. **Always set `custom_excerpt` when creating a new post.** Ghost uses it for cards, social previews, and SEO descriptions. After pushing content, ask the user for an excerpt if one wasn't provided, or draft one and confirm before setting it.
+10. **Always check `custom_excerpt` when updating a post's content or title.** If the post content or title changes significantly (e.g. translation, rewrite, new topic), the excerpt likely needs updating too. After any major edit, verify the excerpt still matches the current content and update it if not.
